@@ -6,11 +6,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
+import { Calendar } from '@/components/ui/calendar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [loginModal, setLoginModal] = useState(false);
   const [userType, setUserType] = useState('volunteer');
+  const [currentView, setCurrentView] = useState('home');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState('volunteer');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [eventFilter, setEventFilter] = useState('all');
+  const [profilePanel, setProfilePanel] = useState(false);
 
   const events = [
     {
@@ -86,6 +97,362 @@ const Index = () => {
     }
   ];
 
+  // Mock user data
+  const currentUser = {
+    id: 1,
+    name: 'Анна Петрова',
+    email: 'anna.petrova@example.com',
+    avatar: '',
+    joinDate: '2023-03-15',
+    level: 'Активный волонтер',
+    totalEvents: 23,
+    totalHours: 127,
+    achievements: [
+      { name: 'Помощник ветеранов', icon: 'Heart', description: '10+ мероприятий с ветеранами' },
+      { name: 'Патриот', icon: 'Flag', description: 'Участие в 5+ патриотических акциях' },
+      { name: 'Организатор', icon: 'Users', description: 'Помощь в организации мероприятий' }
+    ]
+  };
+
+  // Extended events with more details for calendar
+  const extendedEvents = [
+    ...events,
+    {
+      id: 4,
+      title: 'Встреча с ветеранами',
+      date: '2024-08-15',
+      time: '14:00',
+      location: 'Дом культуры',
+      volunteers: 15,
+      category: 'veterans',
+      status: 'recruiting',
+      description: 'Торжественная встреча с ветеранами войны и труда'
+    },
+    {
+      id: 5,
+      title: 'Субботник в парке Победы',
+      date: '2024-08-20',
+      time: '10:00',
+      location: 'Парк Победы',
+      volunteers: 35,
+      category: 'cleanup',
+      status: 'active',
+      description: 'Общегородской субботник по благоустройству'
+    }
+  ];
+
+  const handleLogin = (type: string) => {
+    setIsLoggedIn(true);
+    setUserRole(type);
+    setLoginModal(false);
+  };
+
+  const filteredEvents = extendedEvents.filter(event => {
+    if (eventFilter === 'all') return true;
+    return event.category === eventFilter;
+  });
+
+  // Volunteer Dashboard Component
+  const VolunteerDashboard = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Всего мероприятий</CardTitle>
+            <Icon name="Calendar" className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-primary">{currentUser.totalEvents}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Часов волонтерства</CardTitle>
+            <Icon name="Clock" className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-primary">{currentUser.totalHours}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Уровень</CardTitle>
+            <Icon name="Award" className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm font-medium text-primary">{currentUser.level}</div>
+            <Progress value={75} className="mt-2" />
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Мои достижения</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {currentUser.achievements.map((achievement, index) => (
+              <div key={index} className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
+                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Icon name={achievement.icon as any} className="text-primary" size={20} />
+                </div>
+                <div>
+                  <h4 className="font-medium">{achievement.name}</h4>
+                  <p className="text-sm text-muted-foreground">{achievement.description}</p>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Ближайшие мероприятия</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {events.slice(0, 3).map((event) => (
+              <div key={event.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Icon name="Calendar" className="text-primary" size={16} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-sm">{event.title}</h4>
+                  <p className="text-xs text-muted-foreground">{event.date}</p>
+                </div>
+                <Badge variant={event.status === 'active' ? 'default' : 'secondary'}>
+                  {event.status === 'active' ? 'Активное' : 'Набор'}
+                </Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+
+  // Calendar View Component
+  const CalendarView = () => (
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+        <h3 className="text-2xl font-bold text-secondary">Календарь мероприятий</h3>
+        <Select value={eventFilter} onValueChange={setEventFilter}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Фильтр по типу" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Все мероприятия</SelectItem>
+            <SelectItem value="veterans">Помощь ветеранам</SelectItem>
+            <SelectItem value="cleanup">Благоустройство</SelectItem>
+            <SelectItem value="education">Образование</SelectItem>
+            <SelectItem value="memorial">Памятные мероприятия</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle className="text-lg">Выберите дату</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              className="rounded-md border"
+            />
+          </CardContent>
+        </Card>
+
+        <div className="lg:col-span-2 space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Мероприятия {selectedDate?.toLocaleDateString('ru-RU', { 
+                  day: 'numeric', 
+                  month: 'long', 
+                  year: 'numeric' 
+                })}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {filteredEvents.map((event) => (
+                <div key={event.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <h4 className="font-medium">{event.title}</h4>
+                        <Badge 
+                          variant={
+                            event.status === 'active' ? 'default' :
+                            event.status === 'recruiting' ? 'secondary' : 'outline'
+                          }
+                        >
+                          {event.status === 'active' ? 'Активное' :
+                           event.status === 'recruiting' ? 'Набор' : 'Завершено'}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                        <span className="flex items-center">
+                          <Icon name="Clock" size={14} className="mr-1" />
+                          {event.time || event.date}
+                        </span>
+                        <span className="flex items-center">
+                          <Icon name="MapPin" size={14} className="mr-1" />
+                          {event.location}
+                        </span>
+                        <span className="flex items-center">
+                          <Icon name="Users" size={14} className="mr-1" />
+                          {event.volunteers} волонтеров
+                        </span>
+                      </div>
+                      {event.description && (
+                        <p className="text-sm text-muted-foreground">{event.description}</p>
+                      )}
+                    </div>
+                    <Button size="sm" className="ml-4">
+                      {event.status === 'recruiting' ? 'Записаться' : 'Подробнее'}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (currentView === 'dashboard' && isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white shadow-sm border-b-2 border-primary">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                  <Icon name="Star" className="text-white" size={24} />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-secondary">Личный кабинет</h1>
+                  <p className="text-sm text-muted-foreground">{currentUser.name}</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button variant="outline" onClick={() => setCurrentView('calendar')}>
+                  <Icon name="Calendar" size={16} className="mr-2" />
+                  Календарь
+                </Button>
+                <Button variant="outline" onClick={() => setCurrentView('home')}>
+                  <Icon name="Home" size={16} className="mr-2" />
+                  Главная
+                </Button>
+                <Sheet open={profilePanel} onOpenChange={setProfilePanel}>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={currentUser.avatar} />
+                        <AvatarFallback>{currentUser.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent>
+                    <SheetHeader>
+                      <SheetTitle>Профиль волонтера</SheetTitle>
+                      <SheetDescription>
+                        Управление профилем и настройками
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="space-y-6 mt-6">
+                      <div className="flex items-center space-x-4">
+                        <Avatar className="h-16 w-16">
+                          <AvatarImage src={currentUser.avatar} />
+                          <AvatarFallback className="text-lg">
+                            {currentUser.name.split(' ').map(n => n[0]).join('')}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="font-medium">{currentUser.name}</h3>
+                          <p className="text-sm text-muted-foreground">{currentUser.email}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Волонтер с {new Date(currentUser.joinDate).toLocaleDateString('ru-RU')}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <Button variant="outline" className="w-full justify-start">
+                          <Icon name="Settings" size={16} className="mr-2" />
+                          Настройки профиля
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start">
+                          <Icon name="Bell" size={16} className="mr-2" />
+                          Уведомления
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start"
+                          onClick={() => {
+                            setIsLoggedIn(false);
+                            setCurrentView('home');
+                            setProfilePanel(false);
+                          }}
+                        >
+                          <Icon name="LogOut" size={16} className="mr-2" />
+                          Выйти
+                        </Button>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div className="container mx-auto px-4 py-8">
+          <VolunteerDashboard />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentView === 'calendar') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white shadow-sm border-b-2 border-primary">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                  <Icon name="Star" className="text-white" size={24} />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-secondary">Волонтеры Победы</h1>
+                  <p className="text-sm text-muted-foreground">г. Лосино-Петровский</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {isLoggedIn && (
+                  <Button variant="outline" onClick={() => setCurrentView('dashboard')}>
+                    <Icon name="User" size={16} className="mr-2" />
+                    Мой кабинет
+                  </Button>
+                )}
+                <Button variant="outline" onClick={() => setCurrentView('home')}>
+                  <Icon name="Home" size={16} className="mr-2" />
+                  Главная
+                </Button>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div className="container mx-auto px-4 py-8">
+          <CalendarView />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -102,13 +469,25 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Dialog open={loginModal} onOpenChange={setLoginModal}>
-                <DialogTrigger asChild>
-                  <Button variant="outline">
-                    <Icon name="LogIn" size={16} className="mr-2" />
-                    Войти
+              {isLoggedIn ? (
+                <>
+                  <Button variant="outline" onClick={() => setCurrentView('calendar')}>
+                    <Icon name="Calendar" size={16} className="mr-2" />
+                    Календарь
                   </Button>
-                </DialogTrigger>
+                  <Button onClick={() => setCurrentView('dashboard')}>
+                    <Icon name="User" size={16} className="mr-2" />
+                    Мой кабинет
+                  </Button>
+                </>
+              ) : (
+                <Dialog open={loginModal} onOpenChange={setLoginModal}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">
+                      <Icon name="LogIn" size={16} className="mr-2" />
+                      Войти
+                    </Button>
+                  </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Вход в систему</DialogTitle>
@@ -130,7 +509,7 @@ const Index = () => {
                         <Label htmlFor="volunteer-password">Пароль</Label>
                         <Input id="volunteer-password" type="password" />
                       </div>
-                      <Button className="w-full">Войти как волонтер</Button>
+                      <Button className="w-full" onClick={() => handleLogin('volunteer')}>Войти как волонтер</Button>
                     </TabsContent>
                     <TabsContent value="admin" className="space-y-4">
                       <div className="space-y-2">
@@ -141,7 +520,7 @@ const Index = () => {
                         <Label htmlFor="admin-password">Пароль</Label>
                         <Input id="admin-password" type="password" />
                       </div>
-                      <Button className="w-full">Войти как администратор</Button>
+                      <Button className="w-full" onClick={() => handleLogin('admin')}>Войти как администратор</Button>
                     </TabsContent>
                   </Tabs>
                 </DialogContent>
@@ -150,6 +529,8 @@ const Index = () => {
                 <Icon name="UserPlus" size={16} className="mr-2" />
                 Стать волонтером
               </Button>
+              </>
+              )}
             </div>
           </div>
         </div>
