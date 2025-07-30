@@ -529,7 +529,7 @@ const Index = () => {
                 <Icon name="UserPlus" size={16} className="mr-2" />
                 Стать волонтером
               </Button>
-              </>
+                </>
               )}
             </div>
           </div>
