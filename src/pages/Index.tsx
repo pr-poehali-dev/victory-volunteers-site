@@ -481,7 +481,8 @@ const Index = () => {
                   </Button>
                 </>
               ) : (
-                <Dialog open={loginModal} onOpenChange={setLoginModal}>
+                <>
+                  <Dialog open={loginModal} onOpenChange={setLoginModal}>
                   <DialogTrigger asChild>
                     <Button variant="outline">
                       <Icon name="LogIn" size={16} className="mr-2" />
@@ -525,10 +526,10 @@ const Index = () => {
                   </Tabs>
                 </DialogContent>
               </Dialog>
-              <Button>
-                <Icon name="UserPlus" size={16} className="mr-2" />
-                Стать волонтером
-              </Button>
+                  <Button>
+                    <Icon name="UserPlus" size={16} className="mr-2" />
+                    Стать волонтером
+                  </Button>
                 </>
               )}
             </div>
