@@ -154,33 +154,33 @@ const Index = () => {
 
   // Volunteer Dashboard Component
   const VolunteerDashboard = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Всего мероприятий</CardTitle>
-            <Icon name="Calendar" className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs sm:text-sm font-medium">Всего мероприятий</CardTitle>
+            <Icon name="Calendar" className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{currentUser.totalEvents}</div>
+            <div className="text-xl sm:text-2xl font-bold text-primary">{currentUser.totalEvents}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Часов волонтерства</CardTitle>
-            <Icon name="Clock" className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs sm:text-sm font-medium">Часов волонтерства</CardTitle>
+            <Icon name="Clock" className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{currentUser.totalHours}</div>
+            <div className="text-xl sm:text-2xl font-bold text-primary">{currentUser.totalHours}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="sm:col-span-2 lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Уровень</CardTitle>
-            <Icon name="Award" className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs sm:text-sm font-medium">Уровень</CardTitle>
+            <Icon name="Award" className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-sm font-medium text-primary">{currentUser.level}</div>
+            <div className="text-xs sm:text-sm font-medium text-primary">{currentUser.level}</div>
             <Progress value={75} className="mt-2" />
           </CardContent>
         </Card>
@@ -250,22 +250,22 @@ const Index = () => {
         </Select>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 sm:gap-6">
         <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle className="text-lg">Выберите дату</CardTitle>
+            <CardTitle className="text-base sm:text-lg">Выберите дату</CardTitle>
           </CardHeader>
           <CardContent>
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={setSelectedDate}
-              className="rounded-md border"
+              className="rounded-md border w-full"
             />
           </CardContent>
         </Card>
 
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-3 sm:space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>
@@ -278,40 +278,41 @@ const Index = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               {filteredEvents.map((event) => (
-                <div key={event.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <h4 className="font-medium">{event.title}</h4>
+                <div key={event.id} className="border rounded-lg p-3 sm:p-4 hover:bg-muted/50 transition-colors">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
+                    <div className="space-y-2 flex-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                        <h4 className="font-medium text-sm sm:text-base line-clamp-2">{event.title}</h4>
                         <Badge 
                           variant={
                             event.status === 'active' ? 'default' :
                             event.status === 'recruiting' ? 'secondary' : 'outline'
                           }
+                          className="text-xs w-fit"
                         >
                           {event.status === 'active' ? 'Активное' :
                            event.status === 'recruiting' ? 'Набор' : 'Завершено'}
                         </Badge>
                       </div>
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                         <span className="flex items-center">
-                          <Icon name="Clock" size={14} className="mr-1" />
-                          {event.time || event.date}
+                          <Icon name="Clock" size={12} className="mr-1 flex-shrink-0" />
+                          <span className="truncate">{event.time || event.date}</span>
                         </span>
                         <span className="flex items-center">
-                          <Icon name="MapPin" size={14} className="mr-1" />
-                          {event.location}
+                          <Icon name="MapPin" size={12} className="mr-1 flex-shrink-0" />
+                          <span className="truncate">{event.location}</span>
                         </span>
                         <span className="flex items-center">
-                          <Icon name="Users" size={14} className="mr-1" />
+                          <Icon name="Users" size={12} className="mr-1 flex-shrink-0" />
                           {event.volunteers} волонтеров
                         </span>
                       </div>
                       {event.description && (
-                        <p className="text-sm text-muted-foreground">{event.description}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{event.description}</p>
                       )}
                     </div>
-                    <Button size="sm" className="ml-4">
+                    <Button size="sm" className="w-full sm:w-auto sm:ml-4 text-xs">
                       {event.status === 'recruiting' ? 'Записаться' : 'Подробнее'}
                     </Button>
                   </div>
@@ -526,9 +527,10 @@ const Index = () => {
                   </Tabs>
                 </DialogContent>
               </Dialog>
-                  <Button>
-                    <Icon name="UserPlus" size={16} className="mr-2" />
-                    Стать волонтером
+                  <Button size="sm">
+                    <Icon name="UserPlus" size={16} className="mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Стать волонтером</span>
+                    <span className="sm:hidden">Стать</span>
                   </Button>
                 </>
               )}
@@ -538,41 +540,41 @@ const Index = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary to-red-600 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">Местный штаб Волонтеров Победы</h2>
-          <p className="text-xl mb-8 opacity-90">г. Лосино-Петровский</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+      <section className="bg-gradient-to-r from-primary to-red-600 text-white py-8 sm:py-12 md:py-16">
+        <div className="container mx-auto px-3 sm:px-4 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Местный штаб Волонтеров Победы</h2>
+          <p className="text-lg sm:text-xl mb-6 sm:mb-8 opacity-90">г. Лосино-Петровский</p>
+          <div className="grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-8 sm:mt-12">
             <div className="text-center">
-              <div className="text-3xl font-bold">546</div>
-              <div className="text-sm opacity-80">Активных волонтеров</div>
+              <div className="text-xl sm:text-2xl md:text-3xl font-bold">546</div>
+              <div className="text-xs sm:text-sm opacity-80">Активных волонтеров</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold">89</div>
-              <div className="text-sm opacity-80">Проведено мероприятий</div>
+              <div className="text-xl sm:text-2xl md:text-3xl font-bold">89</div>
+              <div className="text-xs sm:text-sm opacity-80">Проведено мероприятий</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold">1,234</div>
-              <div className="text-sm opacity-80">Помогли людям</div>
+              <div className="text-xl sm:text-2xl md:text-3xl font-bold">1,234</div>
+              <div className="text-xs sm:text-sm opacity-80">Помогли людям</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4">
-          <div className="flex space-x-8 overflow-x-auto py-4">
-            <a href="#events" className="text-secondary hover:text-primary whitespace-nowrap font-medium">
+      <nav className="bg-white shadow-sm border-b sticky top-16 z-40">
+        <div className="container mx-auto px-3 sm:px-4">
+          <div className="flex space-x-4 sm:space-x-8 overflow-x-auto py-3 sm:py-4 scrollbar-hide">
+            <a href="#events" className="text-secondary hover:text-primary whitespace-nowrap font-medium text-sm sm:text-base">
               Мероприятия
             </a>
-            <a href="#news" className="text-secondary hover:text-primary whitespace-nowrap font-medium">
+            <a href="#news" className="text-secondary hover:text-primary whitespace-nowrap font-medium text-sm sm:text-base">
               Новости
             </a>
-            <a href="#directions" className="text-secondary hover:text-primary whitespace-nowrap font-medium">
+            <a href="#directions" className="text-secondary hover:text-primary whitespace-nowrap font-medium text-sm sm:text-base">
               Направления
             </a>
-            <a href="#contacts" className="text-secondary hover:text-primary whitespace-nowrap font-medium">
+            <a href="#contacts" className="text-secondary hover:text-primary whitespace-nowrap font-medium text-sm sm:text-base">
               Контакты
             </a>
           </div>
@@ -580,26 +582,26 @@ const Index = () => {
       </nav>
 
       {/* Events Section */}
-      <section id="events" className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-3xl font-bold text-secondary">Ближайшие мероприятия</h3>
-            <Button variant="outline">
+      <section id="events" className="py-8 sm:py-12 md:py-16">
+        <div className="container mx-auto px-3 sm:px-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-3">
+            <h3 className="text-2xl sm:text-3xl font-bold text-secondary">Ближайшие мероприятия</h3>
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               <Icon name="Calendar" size={16} className="mr-2" />
               Все мероприятия
             </Button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {events.map((event) => (
               <Card key={event.id} className="hover:shadow-lg transition-shadow">
                 <div className="relative">
                   <img 
                     src={event.image} 
                     alt={event.title}
-                    className="w-full h-48 object-cover rounded-t-lg"
+                    className="w-full h-40 sm:h-48 object-cover rounded-t-lg"
                   />
                   <Badge 
-                    className={`absolute top-2 right-2 ${
+                    className={`absolute top-2 right-2 text-xs ${
                       event.status === 'active' ? 'bg-green-500' :
                       event.status === 'recruiting' ? 'bg-primary' : 'bg-gray-500'
                     }`}
@@ -608,28 +610,28 @@ const Index = () => {
                      event.status === 'recruiting' ? 'Набор' : 'Завершено'}
                   </Badge>
                 </div>
-                <CardHeader>
-                  <CardTitle className="text-lg">{event.title}</CardTitle>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base sm:text-lg line-clamp-2">{event.title}</CardTitle>
                   <CardDescription>
-                    <div className="flex items-center space-x-4 text-sm">
+                    <div className="flex flex-col space-y-1 text-xs sm:text-sm">
                       <span className="flex items-center">
-                        <Icon name="Calendar" size={14} className="mr-1" />
-                        {event.date}
+                        <Icon name="Calendar" size={12} className="mr-1 flex-shrink-0" />
+                        <span className="truncate">{event.date}</span>
                       </span>
                       <span className="flex items-center">
-                        <Icon name="MapPin" size={14} className="mr-1" />
-                        {event.location}
+                        <Icon name="MapPin" size={12} className="mr-1 flex-shrink-0" />
+                        <span className="truncate">{event.location}</span>
                       </span>
                     </div>
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-2">
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center text-sm text-muted-foreground">
-                      <Icon name="Users" size={14} className="mr-1" />
+                    <span className="flex items-center text-xs sm:text-sm text-muted-foreground">
+                      <Icon name="Users" size={12} className="mr-1" />
                       {event.volunteers} волонтеров
                     </span>
-                    <Button size="sm">Участвовать</Button>
+                    <Button size="sm" className="text-xs px-3 py-1">Участвовать</Button>
                   </div>
                 </CardContent>
               </Card>
